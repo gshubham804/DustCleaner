@@ -1,6 +1,7 @@
-# DustCleaner 🧹
-
-![DustCleaner Logo](/public/Logo.svg)
+<div align="center">
+  <img src="/public/Logo.svg" alt="DustCleaner Logo" width="120" />
+  <h1>DustCleaner 🧹</h1>
+</div>
 
 **Clean your Solana wallet by converting small token balances (dust) into SOL with one click.**
 
