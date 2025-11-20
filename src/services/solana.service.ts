@@ -86,6 +86,13 @@ class SolanaService {
       throw error;
     }
   }
+
+  /**
+   * Get the connection instance
+   */
+  getConnection(): Connection {
+    return this.connection;
+  }
 }
 
 export const solanaService = new SolanaService();

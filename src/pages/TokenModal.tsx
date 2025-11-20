@@ -86,57 +86,203 @@ const handleConvert = async () => {
 
     const selected = tokens.filter(t => selectedTokens.has(t.mint));
 
-    if (!selected.length) return;
-
-    const results = [];
-
-    for (const token of selected) {
-      try {
-        // 1) Convert balance to raw amount (integer)
-        const rawAmount = Math.floor(token.balance * 10 ** token.decimals);
-
-        // 2) Get quote from Jupiter
-        const quote = await jupiterService.getQuote(
-          token.mint,
-          SOL_MINT,
-          rawAmount
-        );
-
-        // 3) Create swap transaction
-        const swapTx = await jupiterService.createSwapTransaction(
-          wallet.publicKey.toBase58(),
-          quote
-        );
-
-        // 4) Deserialize & sign transaction
-        const txBuffer = Buffer.from(swapTx.swapTransaction, "base64");
-        const transaction = VersionedTransaction.deserialize(txBuffer);
-
-        const signedTx = await wallet.signTransaction(transaction);
-
-        // 5) Send & confirm
-        const signature = await solanaService.sendAndConfirmTransaction(signedTx);
-
-        results.push({
-          mint: token.mint,
-          symbol: token.symbol,
-          signature,
-          status: "success",
-        });
-
-      } catch (innerErr) {
-        console.error(`Swap failed for ${token.symbol}:`, innerErr);
-        results.push({
-          mint: token.mint,
-          symbol: token.symbol,
-          status: "failed",
-          error: innerErr instanceof Error ? innerErr.message : "Unknown error",
-        });
-      }
+    if (!selected.length) {
+      setConverting(false);
+      return;
     }
 
-    setConverting(false);
-    onConvert(results);
+    // Safety check for wallet
+    if (!wallet?.publicKey) {
+      throw new Error("Wallet not connected");
+    }
+
+    // BATCH SWAP APPROACH: Combine all swaps into ONE transaction
+    try {
+      // Limit batch size to prevent transaction size issues
+      const MAX_BATCH_SIZE = 3; // Conservative limit
+      
+      if (selected.length > MAX_BATCH_SIZE) {
+        throw new Error(`Too many tokens selected. Please select ${MAX_BATCH_SIZE} or fewer tokens for batch swapping.`);
+      }
+
+      // Step 1: Get all quotes in parallel
+      console.log("Getting quotes for", selected.length, "tokens...");
+      const quotesWithTokens = await Promise.all(
+        selected.map(async (token) => {
+          const rawAmount = Math.floor(token.balance * 10 ** token.decimals);
+          const quote = await jupiterService.getQuote(
+            token.mint,
+            SOL_MINT,
+            rawAmount
+          );
+          return { token, quote };
+        })
+      );
+
+      // Step 2: Get swap instructions for each token
+      console.log("Getting swap instructions...");
+      const instructionsData = await Promise.all(
+        quotesWithTokens.map(async ({ quote }) => {
+          return await jupiterService.getSwapInstructions(
+            wallet.publicKey.toBase58(),
+            quote
+          );
+        })
+      );
+
+      // Step 3: Combine all instructions into one transaction
+      const { 
+        TransactionMessage, 
+        VersionedTransaction, 
+        TransactionInstruction, 
+        PublicKey
+      } = await import('@solana/web3.js');
+      const connection = solanaService.getConnection();
+
+      // Collect all instructions and lookup tables
+      const allInstructions: any[] = [];
+      const lookupTableAccounts: any[] = [];
+      
+      for (const instructionData of instructionsData) {
+        // Add address lookup tables if provided by Jupiter
+        if (instructionData.addressLookupTableAddresses) {
+          for (const lutAddress of instructionData.addressLookupTableAddresses) {
+            const lookupTableAccount = await connection.getAddressLookupTable(
+              new PublicKey(lutAddress)
+            );
+            if (lookupTableAccount.value) {
+              lookupTableAccounts.push(lookupTableAccount.value);
+            }
+          }
+        }
+
+        // Each instructionData contains setup, swap, and cleanup instructions
+        if (instructionData.setupInstructions) {
+          allInstructions.push(...instructionData.setupInstructions.map((ix: any) => 
+            new TransactionInstruction({
+              programId: new PublicKey(ix.programId),
+              keys: ix.accounts.map((acc: any) => ({
+                pubkey: new PublicKey(acc.pubkey),
+                isSigner: acc.isSigner,
+                isWritable: acc.isWritable,
+              })),
+              data: Buffer.from(ix.data, 'base64'),
+            })
+          ));
+        }
+
+        if (instructionData.swapInstruction) {
+          const ix = instructionData.swapInstruction;
+          allInstructions.push(
+            new TransactionInstruction({
+              programId: new PublicKey(ix.programId),
+              keys: ix.accounts.map((acc: any) => ({
+                pubkey: new PublicKey(acc.pubkey),
+                isSigner: acc.isSigner,
+                isWritable: acc.isWritable,
+              })),
+              data: Buffer.from(ix.data, 'base64'),
+            })
+          );
+        }
+
+        if (instructionData.cleanupInstructions) {
+          allInstructions.push(...instructionData.cleanupInstructions.map((ix: any) =>
+            new TransactionInstruction({
+              programId: new PublicKey(ix.programId),
+              keys: ix.accounts.map((acc: any) => ({
+                pubkey: new PublicKey(acc.pubkey),
+                isSigner: acc.isSigner,
+                isWritable: acc.isWritable,
+              })),
+              data: Buffer.from(ix.data, 'base64'),
+            })
+          ));
+        }
+      }
+
+      console.log(`Combined ${allInstructions.length} instructions from ${selected.length} swaps`);
+      console.log(`Using ${lookupTableAccounts.length} address lookup tables`);
+
+      // Step 4: Create ONE versioned transaction with all instructions
+      const { blockhash } = await connection.getLatestBlockhash();
+      
+      const messageV0 = new TransactionMessage({
+        payerKey: wallet.publicKey,
+        recentBlockhash: blockhash,
+        instructions: allInstructions,
+      }).compileToV0Message(lookupTableAccounts);
+
+      const batchTransaction = new VersionedTransaction(messageV0);
+
+      // Check transaction size before signing
+      const txSize = batchTransaction.serialize().length;
+      console.log(`Transaction size: ${txSize} bytes (max: 1232)`);
+      
+      if (txSize > 1232) {
+        throw new Error(`Transaction too large (${txSize} bytes). Try selecting fewer tokens.`);
+      }
+
+      // Step 5: Sign the batch transaction ONCE
+      console.log("Requesting signature for batch transaction...");
+      const signedTx = await wallet.signTransaction(batchTransaction);
+
+      // Step 6: Send and confirm
+      console.log("Sending batch transaction...");
+      const signature = await solanaService.sendAndConfirmTransaction(signedTx);
+
+      console.log("Batch swap successful! Signature:", signature);
+
+      // Step 7: Mark all as successful
+      const results = selected.map(token => ({
+        mint: token.mint,
+        symbol: token.symbol,
+        signature,
+        status: "success",
+      }));
+
+      setConverting(false);
+      onConvert(results);
+
+    } catch (batchErr) {
+      console.error("Batch swap failed:", batchErr);
+      console.log("Falling back to individual swaps...");
+      
+      // FALLBACK: If batch fails, do individual swaps
+      const results = [];
+      for (const token of selected) {
+        try {
+          const rawAmount = Math.floor(token.balance * 10 ** token.decimals);
+          const quote = await jupiterService.getQuote(token.mint, SOL_MINT, rawAmount);
+          const swapTx = await jupiterService.createSwapTransaction(
+            wallet.publicKey.toBase58(),
+            quote
+          );
+          const txBuffer = Buffer.from(swapTx.swapTransaction, "base64");
+          const transaction = VersionedTransaction.deserialize(txBuffer);
+          const signedTx = await wallet.signTransaction(transaction);
+          const signature = await solanaService.sendAndConfirmTransaction(signedTx);
+
+          results.push({
+            mint: token.mint,
+            symbol: token.symbol,
+            signature,
+            status: "success",
+          });
+        } catch (innerErr) {
+          console.error(`Swap failed for ${token.symbol}:`, innerErr);
+          results.push({
+            mint: token.mint,
+            symbol: token.symbol,
+            status: "failed",
+            error: innerErr instanceof Error ? innerErr.message : "Unknown error",
+          });
+        }
+      }
+
+      setConverting(false);
+      onConvert(results);
+    }
 
   } catch (err) {
     console.error("Conversion error:", err);

@@ -2,6 +2,7 @@ import {
   JUPITER_PRICE_API,
   JUPITER_QUOTE_API,
   JUPITER_SWAP_API,
+  JUPITER_SWAP_INSTRUCTIONS_API,
   DEFAULT_SLIPPAGE_BPS,
   SOL_MINT,
 } from "../constants";
@@ -96,6 +97,39 @@ class JupiterService {
       return data;
     } catch (error) {
       console.error("Error creating swap transaction:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get swap instructions (not a complete transaction)
+   * This is used for batching multiple swaps into one transaction
+   */
+  async getSwapInstructions(
+    userPublicKey: string,
+    quoteResponse: JupiterQuoteResponse
+  ): Promise<any> {
+    try {
+      const response = await fetch(JUPITER_SWAP_INSTRUCTIONS_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userPublicKey,
+          quoteResponse,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to get swap instructions: ${errorText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error getting swap instructions:", error);
       throw error;
     }
   }
