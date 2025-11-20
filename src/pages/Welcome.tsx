@@ -16,12 +16,6 @@ const Welcome = () => {
     { icon: Coins, text: "Easy", desc: "One-click swaps" },
   ];
 
-  const stats = [
-    { value: "10K+", label: "Active Users" },
-    { value: "$2M+", label: "Total Volume" },
-    { value: "50K+", label: "Swaps Completed" },
-  ];
-
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#F7F7F7] to-white relative overflow-hidden">
       {/* Animated Background Elements */}
