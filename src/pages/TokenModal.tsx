@@ -299,7 +299,7 @@ const handleConvert = async () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-[#323643]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-[#323643]/80 backdrop-blur-sm z-50 flex items-center justify-center p-0"
       onClick={onClose}
     >
       <motion.div
@@ -312,14 +312,14 @@ const handleConvert = async () => {
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white/90 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden outline-none"
+        className="bg-white/90 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl max-w-3xl w-full mx-4 max-h-[85vh] sm:max-h-[90vh] flex flex-col overflow-hidden outline-none"
       >
         {/* Header */}
-        <div className="relative bg-gradient-to-r from-[#93DEFF]/20 to-[#606470]/10 px-6 py-5 border-b border-gray-200">
+        <div className="relative bg-gradient-to-r from-[#93DEFF]/20 to-[#606470]/10 px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-200">
           <div className="absolute inset-0 bg-gradient-to-r from-[#93DEFF]/10 to-transparent"></div>
           <div className="relative flex items-start justify-between">
             <div>
-              <h2 id="modal-title" className="text-2xl font-black text-[#323643] mb-1">Select Tokens to Convert</h2>
+              <h2 id="modal-title" className="text-xl sm:text-2xl font-black text-[#323643] mb-1">Select Tokens to Convert</h2>
               <p className="text-sm text-[#606470]">
                 <span className="font-bold text-[#93DEFF]">{selectedTokens.size}</span> of {tokens.length} selected • 
                 <span className="font-bold text-[#323643]"> ${selectedValue.toFixed(2)}</span> total value
@@ -335,7 +335,7 @@ const handleConvert = async () => {
         </div>
 
         {/* Select All */}
-        <div className="px-6 py-4 bg-[#F7F7F7] border-b border-gray-200">
+        <div className="px-4 sm:px-6 py-4 bg-[#F7F7F7] border-b border-gray-200">
           <button
             onClick={toggleSelectAll}
             className="group flex items-center gap-3 text-[#323643] hover:text-[#93DEFF] transition-colors font-bold"
@@ -353,7 +353,7 @@ const handleConvert = async () => {
 
         {/* Info Banner */}
         {selectedTokens.size > 0 && (
-          <div className="mx-6 mt-4 p-4 bg-[#93DEFF]/10 border border-[#93DEFF]/30 rounded-xl flex items-start gap-3">
+          <div className="mx-4 sm:mx-6 mt-4 p-3 sm:p-4 bg-[#93DEFF]/10 border border-[#93DEFF]/30 rounded-xl flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-[#93DEFF] flex-shrink-0 mt-0.5" />
             <div className="text-sm text-[#323643]">
               <p className="font-bold text-[#93DEFF] mb-1">Conversion Info</p>
@@ -363,7 +363,7 @@ const handleConvert = async () => {
         )}
 
         {/* Token List */}
-        <div className="p-6 space-y-3 max-h-[50vh] overflow-y-auto">
+        <div className="p-4 sm:p-6 space-y-3 overflow-y-auto flex-1 min-h-0">
           {tokens.map((token) => (
             <TokenCard
               key={token.mint}
@@ -376,8 +376,8 @@ const handleConvert = async () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-5 bg-[#F7F7F7] border-t border-gray-200">
-          <div className="flex items-center justify-between gap-4">
+        <div className="px-4 sm:px-6 py-4 sm:py-5 bg-[#F7F7F7] border-t border-gray-200 flex-shrink-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[#606470] text-sm">Selected:</span>
@@ -390,18 +390,18 @@ const handleConvert = async () => {
                 </p>
               )}
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
               <button
                 onClick={onClose}
                 disabled={converting}
-                className="px-6 py-3 bg-white hover:bg-gray-100 border border-gray-300 rounded-xl text-[#323643] font-bold transition-all disabled:opacity-50"
+                className="px-4 sm:px-6 py-3 bg-white hover:bg-gray-100 border border-gray-300 rounded-xl text-[#323643] font-bold transition-all disabled:opacity-50 flex-1 sm:flex-none"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConvert}
                 disabled={converting || selectedTokens.size === 0}
-                className="relative px-8 py-3 bg-gradient-to-r from-[#93DEFF] to-[#606470] hover:from-[#93DEFF]/90 hover:to-[#606470]/90 text-[#323643] rounded-xl font-bold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 flex items-center gap-2 overflow-hidden group"
+                className="relative px-4 sm:px-6 md:px-8 py-3 bg-gradient-to-r from-[#93DEFF] to-[#606470] hover:from-[#93DEFF]/90 hover:to-[#606470]/90 text-[#323643] rounded-xl font-bold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 flex items-center gap-2 overflow-hidden group flex-1 sm:flex-none justify-center"
               >
                 {converting ? (
                   <>

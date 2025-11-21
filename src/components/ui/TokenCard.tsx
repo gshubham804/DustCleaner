@@ -47,13 +47,13 @@ const TokenCard = ({ token, onClick, selected = false, showCheckbox = false }: T
               </div>
             )}
             
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#93DEFF]/30 to-[#606470]/20 border border-[#93DEFF]/20 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <Coins className="w-8 h-8 text-[#323643]" />
+            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#93DEFF]/30 to-[#606470]/20 border border-[#93DEFF]/20 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <Coins className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-[#323643]" />
             </div>
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <p className="font-bold text-xl text-[#323643] truncate">
+                <p className="font-bold text-lg sm:text-xl text-[#323643] truncate">
                   {token.symbol || "Unknown Token"}
                 </p>
                 {token.valueUSDT && token.valueUSDT > 0 && (
@@ -62,7 +62,7 @@ const TokenCard = ({ token, onClick, selected = false, showCheckbox = false }: T
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-4 text-sm mb-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm mb-2">
                 <span className="text-[#606470]">
                   Balance:{" "}
                   <span className="text-[#323643] font-bold">

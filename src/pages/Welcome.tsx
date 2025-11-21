@@ -47,7 +47,7 @@ const Welcome = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative bg-white/80 backdrop-blur-xl border-b border-gray-200/50 px-6 py-5 z-10"
+        className="relative bg-white/80 backdrop-blur-xl border-b border-gray-200/50 px-4 sm:px-6 py-4 sm:py-5 z-10"
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <motion.button 
@@ -56,22 +56,22 @@ const Welcome = () => {
             onClick={() => navigate("/")}
             type="button"
           >
-            <img src="/Logo.svg" alt="DustCleaner Logo" className="w-12 h-12 object-cover" />
-            <span className="text-2xl font-black text-[#323643] tracking-tight">
-              <span className="text-[#93DEFF] text-3xl">Dust</span>Cleaner
+            <img src="/Logo.svg" alt="DustCleaner Logo" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 object-cover" />
+            <span className="text-lg sm:text-xl md:text-2xl font-black text-[#323643] tracking-tight">
+              <span className="text-[#93DEFF] text-xl sm:text-2xl md:text-3xl">Dust</span>Cleaner
             </span>
           </motion.button>
           
           {/* REAL WALLET BUTTON - This will work with Solana */}
           <WalletMultiButton 
-            className="!bg-gradient-to-r !from-[#323643] !to-[#606470] hover:!from-[#606470] hover:!to-[#323643] !text-white !rounded-xl !px-8 !py-3 !transition-all !font-bold !shadow-lg !border-0"
+            className="!bg-gradient-to-r !from-[#323643] !to-[#606470] hover:!from-[#606470] hover:!to-[#323643] !text-white !rounded-xl !px-4 sm:!px-6 md:!px-8 !py-2 sm:!py-3 !transition-all !font-bold !shadow-lg !border-0 !text-sm sm:!text-base"
           />
         </div>
       </motion.nav>
 
       {/* Hero Section */}
-      <div className="relative max-w-7xl mx-auto px-6 py-24">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-24">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
           {/* Left Column - Content */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -98,7 +98,7 @@ const Welcome = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <h1 className="text-6xl md:text-7xl lg:text-8xl font-black text-[#323643] mb-6 leading-none tracking-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#323643] mb-6 leading-none tracking-tight">
                 Clean Your
                 <span className="block bg-gradient-to-r from-[#93DEFF] via-[#606470] to-[#93DEFF] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
                   Solana Dust
@@ -110,7 +110,7 @@ const Welcome = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-xl text-[#606470] leading-relaxed max-w-xl"
+              className="text-base sm:text-lg md:text-xl text-[#606470] leading-relaxed max-w-xl"
             >
               Transform scattered token balances into clean SOL with a single click. 
               <span className="text-[#323643] font-semibold"> Powered by Jupiter</span> for the best rates.
@@ -148,7 +148,7 @@ const Welcome = () => {
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate("/user-token-list")}
-                className="group relative bg-gradient-to-r from-[#93DEFF] to-[#606470] text-[#323643] px-10 py-5 rounded-2xl font-black text-xl transition-all flex items-center gap-3 shadow-2xl shadow-[#93DEFF]/30 overflow-hidden"
+                className="group relative bg-gradient-to-r from-[#93DEFF] to-[#606470] text-[#323643] px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-2xl font-black text-base sm:text-lg md:text-xl transition-all flex items-center gap-3 shadow-2xl shadow-[#93DEFF]/30 overflow-hidden"
               >
                 <span className="relative z-10 flex items-center gap-3">
                   View Your Tokens
@@ -170,7 +170,7 @@ const Welcome = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="grid grid-cols-2 gap-5"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5"
           >
             {features.map((feature, idx) => (
               <motion.div
@@ -179,7 +179,7 @@ const Welcome = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 + idx * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-200/50 group cursor-pointer overflow-hidden"
+                className="relative bg-white/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl border border-gray-200/50 group cursor-pointer overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#93DEFF]/0 to-[#93DEFF]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="relative z-10">
@@ -190,8 +190,8 @@ const Welcome = () => {
                   >
                     <feature.icon className="w-8 h-8 text-[#323643]" />
                   </motion.div>
-                  <h3 className="text-xl font-black text-[#323643] mb-2">{feature.text}</h3>
-                  <p className="text-sm text-[#606470] font-medium">{feature.desc}</p>
+                  <h3 className="text-lg sm:text-xl font-black text-[#323643] mb-2">{feature.text}</h3>
+                  <p className="text-xs sm:text-sm text-[#606470] font-medium">{feature.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -204,20 +204,20 @@ const Welcome = () => {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
-        className="relative bg-white/60 backdrop-blur-xl border-y border-gray-200/50 py-24 mt-16"
+        className="relative bg-white/60 backdrop-blur-xl border-y border-gray-200/50 py-12 sm:py-16 md:py-24 mt-8 sm:mt-12 md:mt-16"
       >
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-5xl font-black text-[#323643] mb-4">How It Works</h2>
-            <p className="text-xl text-[#606470]">Three simple steps to clean your wallet</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#323643] mb-4">How It Works</h2>
+            <p className="text-base sm:text-lg md:text-xl text-[#606470]">Three simple steps to clean your wallet</p>
           </motion.div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
             {[
               { step: "01", title: "Connect Wallet", desc: "Link your Solana wallet securely", icon: Lock },
               { step: "02", title: "Select Tokens", desc: "Choose dust tokens to convert", icon: Coins },
@@ -245,8 +245,8 @@ const Welcome = () => {
                     {item.step}
                   </div>
                 </div>
-                <h3 className="text-2xl font-black text-[#323643] mb-3">{item.title}</h3>
-                <p className="text-[#606470] font-medium max-w-xs mx-auto">{item.desc}</p>
+                <h3 className="text-xl sm:text-2xl font-black text-[#323643] mb-3">{item.title}</h3>
+                <p className="text-sm sm:text-base text-[#606470] font-medium max-w-xs mx-auto">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -254,23 +254,23 @@ const Welcome = () => {
       </motion.div>
 
       {/* Footer */}
-      <footer className="relative bg-gradient-to-br from-[#323643] to-[#606470] text-white py-16 mt-24 overflow-hidden">
+      <footer className="relative bg-gradient-to-br from-[#323643] to-[#606470] text-white py-8 sm:py-12 md:py-16 mt-12 sm:mt-16 md:mt-24 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#93DEFF] rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#93DEFF] rounded-full blur-3xl"></div>
         </div>
-        <div className="relative max-w-7xl mx-auto px-6 text-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="flex items-center justify-center gap-3 mb-6"
           >
-            <img src="/Logo.svg" alt="DustCleaner Logo" className="w-12 h-12 object-contain" />
-            <span className="text-3xl font-black">DustCleaner</span>
+            <img src="/Logo.svg" alt="DustCleaner Logo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+            <span className="text-2xl sm:text-3xl font-black">DustCleaner</span>
           </motion.div>
-          <p className="text-[#93DEFF] font-bold text-lg mb-6">Powered by Jupiter Protocol</p>
-          <div className="flex items-center justify-center gap-6 text-sm text-gray-400">
+          <p className="text-[#93DEFF] font-bold text-base sm:text-lg mb-6">Powered by Jupiter Protocol</p>
+          <div className="flex items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-400 flex-wrap">
             <span>© 2024 DustCleaner</span>
             <span>•</span>
             <span>All rights reserved</span>
